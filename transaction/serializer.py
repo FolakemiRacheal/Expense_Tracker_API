@@ -1,21 +1,21 @@
 from rest_framework import serializers
 from .models import Transaction
+from category.models import Category
 
 class TransactionSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Transaction
         fields = (
+            "id",
+            "user",
             "amount",
-            "category",
             "type",
+            "category",
             "description",
-            "created_at",
-            "parent_transaction",
-            "currency",
             "transaction_date",
             "is_recurring",
-
+            "parent_transaction",
+            "created_at",
         )
         read_only_fields = ("user", "created_at")
 
@@ -26,22 +26,11 @@ class TransactionSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         category = data.get("category")
-        choice_type = data.get("type")
-        parent = data.get("parent_transaction")
-        user = self.context["request"].user
-
-        if category and category.type != choice_type:
+        transaction_type = data.get("type")
+        
+        if category and category.type != transaction_type:
             raise serializers.ValidationError(
-                "Category type must match transaction type"
+                f"Category type '{category.type}' doesn't match transaction type '{transaction_type}'"
             )
-
-        if parent and parent.user != user:
-            raise serializers.ValidationError(
-                "Parent transaction must belong to the same user"
-            )
-
+        
         return data
-
-    def create(self, validated_data):
-        validated_data["user"] = self.context["request"].user
-        return super().create(validated_data)

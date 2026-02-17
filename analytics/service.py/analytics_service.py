@@ -1,8 +1,3 @@
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
 from django.db.models import Sum, Count, Q, Avg
 from django.utils import timezone
 from datetime import datetime, timedelta
@@ -127,67 +122,3 @@ class AnalyticsService:
         ).order_by('-total_spent')[:limit]
         
         return list(merchants)
-
-class MonthlySummaryView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        """GET /analytics/summary"""
-        year = request.query_params.get('year')
-        month = request.query_params.get('month')
-        
-        if year:
-            year = int(year)
-        if month:
-            month = int(month)
-        
-        service = AnalyticsService(request.user)
-        summary = service.get_monthly_summary(year, month)
-        
-        return Response(summary)
-
-class CategoryBreakdownView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        """GET /analytics/category-trends"""
-        period_days = int(request.query_params.get('days', 30))
-        
-        service = AnalyticsService(request.user)
-        breakdown = service.get_category_breakdown(period_days)
-        
-        return Response({'breakdown': breakdown})
-
-class SpendingTrendsView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        """GET /analytics/trends"""
-        months = int(request.query_params.get('months', 6))
-        
-        service = AnalyticsService(request.user)
-        trends = service.get_spending_trends(months)
-        
-        return Response({'trends': trends})
-
-class BudgetAlertsView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        """GET /analytics/alerts"""
-        service = AnalyticsService(request.user)
-        alerts = service.get_budget_alerts()
-        
-        return Response({'alerts': alerts})
-
-class TopMerchantsView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        """GET /analytics/merchants"""
-        limit = int(request.query_params.get('limit', 10))
-        
-        service = AnalyticsService(request.user)
-        merchants = service.get_top_merchants(limit)
-        
-        return Response({'merchants': merchants})

@@ -3,7 +3,8 @@ from .views import TransactionViewSet
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register("transaction",TransactionViewSet,basename="transaction")
+router.register("transactions", TransactionViewSet, basename="transactions")
+
 urlpatterns = [
     path("", include(router.urls)),
 ]

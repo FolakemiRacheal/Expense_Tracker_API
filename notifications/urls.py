@@ -1,7 +1,10 @@
-from django.urls import path
-from . import views
+from django.urls import path, include
+from .views import NotificationViewSet
+from rest_framework.routers import DefaultRouter
 
+router = DefaultRouter()
+router.register("notifications", NotificationViewSet, basename="notifications")
 
 urlpatterns = [
-    path('', views.index, name='budget-index'),
+    path("", include(router.urls)),
 ]

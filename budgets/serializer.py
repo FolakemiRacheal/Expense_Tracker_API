@@ -9,9 +9,8 @@ class BudgetSerializer(serializers.ModelSerializer):
             "user",
             "category",
             "limit_amount",
-           
         )
-        read_only_fields = ("user", "category")
+        read_only_fields = ("user",)
         
     def validate_limit_amount(self, value):
         if value <= 0:
